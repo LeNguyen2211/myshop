@@ -1,13 +1,15 @@
-from flask import Blueprint, render_template, request, flash, redirect
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from ShopApp.models import User
 from ShopApp import db
 
-users = Blueprint("user", __name__)
+users = Blueprint("users", __name__)
 
 
 @users.route('/login')
 def login():
-    return {"users": []}
+    if 'user' in session:
+        return redirect('hom')
+    return render_template('login.html')
 
 
 @users.route('/logout')
@@ -18,14 +20,23 @@ def logout():
 @users.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == "POST":
+        errors = {}
         data = request.form.to_dict()
-        if set(list(data.keys())) != set(['username', 'password', 'password_2']):
-            flash("Can not regis account")
+
+        session.permanent = True
+
         username = data.get('username')
         password = data.get('password')
         password_2 = data.get('password_2')
+
+        if set(list(data.keys())) != set(['username', 'password', 'password_2']):
+            errors.update(password="invalid")
+
         if password != password_2:
-            flash("Password 2 invalid!")
+            errors.update(password="invalid")
+
+        if errors:
+            return redirect('', code=400)
         new_user = User(
             username=username,
             password=password,
@@ -33,11 +44,10 @@ def sign_up():
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash("Create user account success!")
         except Exception:
             pass
-        return redirect('/sign_up', code=200)
-
+        return redirect(url_for('users.login'))
+    if 'user' in session:
+        user = session['user']
+        return render_template('home.html', username=user.username)
     return render_template('sign_up.html')
-
-

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+MyShop Login
+{% endblock %}
+
+{% block content %}
+<form method="POST" action="/sign_up">
+    <div class="container">
+        <h1>MY SHOP</h1>
+        <hr>
+
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="username" id="username" required>
+        <br>
+
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" id="password" required>
+        <br>
+
+        <hr>
+
+        <button type="submit" class="login_btn">Login</button>
+    </div>
+
+    <div class="container signin">
+        <p>New to MyShop? <a href="/sign_up">Create an account?</a>.</p>
+    </div>
+</form>
+{% endblock %}
